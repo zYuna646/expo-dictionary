@@ -1,59 +1,94 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React, { useState } from "react";
+import { Image, StyleSheet, Platform, ScrollView } from "react-native";
+import { Text, View, TextInput } from "react-native";
+import { Kosakata } from "@/components/Kosakata";
+import { data } from "@/constants/Kosakata";
 
 export default function HomeScreen() {
+  const [search, onSearch] = useState("");
+
+  // Transform the data object into an array and sort it alphabetically by keys
+  const sortedData = Object.keys(data)
+    .sort()
+    .map((key, index) => ({
+      no: index + 1,
+      name: key,
+      desc: data[key]
+    }));
+
+  // Filter data based on search query
+  const filteredData = sortedData.filter(item =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={{ flex: 1, backgroundColor: "#BBE9FF" }}>
+      <View style={{ flex: 1 }}>
+        <View style={{ marginTop: "10%", width: "90%", alignSelf: "center" }}>
+          <Text style={{ fontSize: 24, fontWeight: "bold" }}>
+            Selamat Datang Di
+          </Text>
+          <Text style={{ fontSize: 30, fontWeight: "bold", color: "#FFFED3" }}>
+            Kamus Informatika
+          </Text>
+          <Text style={{ fontSize: 15, textAlign: "justify" }}>
+            Silahkan Cari Kosakata Yang Ingin Anda Pelajari Dibawah Ini!
+          </Text>
+        </View>
+      </View>
+      <View
+        style={{
+          flex: 3,
+          backgroundColor: "white",
+          borderTopLeftRadius: 25,
+          borderTopRightRadius: 25,
+          width: "100%",
+          alignSelf: "center",
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            width: "90%",
+            alignSelf: "center",
+            marginTop: "10%",
+          }}
+        >
+          <View>
+            <TextInput
+              style={{
+                borderWidth: 1,
+                height: 50,
+                padding: 10,
+                borderRadius: 20,
+                borderColor: "#BBE9FF",
+              }}
+              placeholder="Cari Kosakata"
+              onChangeText={onSearch}
+              value={search}
+            />
+          </View>
+
+          <ScrollView style={{ marginTop: "5%" , marginBottom:'5%',}}>
+            {filteredData.map((item) => (
+              <Kosakata
+                key={item.no}
+                no={item.no}
+                name={item.name}
+                desc={item.desc}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   stepContainer: {
@@ -65,6 +100,6 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
   },
 });
