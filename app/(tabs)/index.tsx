@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, Platform, ScrollView } from "react-native";
+import { StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Text, View, TextInput } from "react-native";
 import { Kosakata } from "@/components/Kosakata";
 import { data } from "@/constants/Kosakata";
 
 export default function HomeScreen() {
   const [search, onSearch] = useState("");
+  const [selected, setSelected] = useState(null);
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUWYZ";
 
   // Transform the data object into an array and sort it alphabetically by keys
   const sortedData = Object.keys(data)
@@ -13,13 +15,25 @@ export default function HomeScreen() {
     .map((key, index) => ({
       no: index + 1,
       name: key,
-      desc: data[key]
+      desc: data[key],
     }));
 
-  // Filter data based on search query
-  const filteredData = sortedData.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filter data based on search query and selected letter
+  const filteredData = sortedData.filter((item) => {
+    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSelected = selected ? item.name.charAt(0).toUpperCase() === selected : true;
+    return matchesSearch && matchesSelected;
+  });
+
+  // Group data by the first letter
+  const groupedData = filteredData.reduce((acc, item) => {
+    const firstLetter = item.name.charAt(0).toUpperCase();
+    if (!acc[firstLetter]) {
+      acc[firstLetter] = [];
+    }
+    acc[firstLetter].push(item);
+    return acc;
+  }, {});
 
   return (
     <View style={{ flex: 1, backgroundColor: "#BBE9FF" }}>
@@ -68,15 +82,39 @@ export default function HomeScreen() {
               value={search}
             />
           </View>
+          <View
+            style={{
+              marginTop: "5%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <TouchableOpacity onPress={() => setSelected(null)}>
+              <Text style={{ fontSize: 18, color: selected === null ? 'blue' : 'black' }}>All</Text>
+            </TouchableOpacity>
+            {alphabet.split("").map((item) => (
+              <TouchableOpacity key={item} onPress={() => setSelected(item)}>
+                <Text style={{ fontSize: 18, color: selected === item ? 'blue' : 'black' }}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          
+          </View>
 
-          <ScrollView style={{ marginTop: "5%" , marginBottom:'5%',}}>
-            {filteredData.map((item) => (
-              <Kosakata
-                key={item.no}
-                no={item.no}
-                name={item.name}
-                desc={item.desc}
-              />
+          <ScrollView style={{ marginTop: "5%", marginBottom: "5%" }}>
+            {Object.keys(groupedData).map((letter) => (
+              <View key={letter}>
+                <Text style={{ fontWeight: "bold", fontSize: 24, marginTop: 10 }}>
+                  {letter}
+                </Text>
+                {groupedData[letter].map((item) => (
+                  <Kosakata
+                    key={item.no}
+                    no={item.no}
+                    name={item.name}
+                    desc={item.desc}
+                  />
+                ))}
+              </View>
             ))}
           </ScrollView>
         </View>

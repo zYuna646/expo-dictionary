@@ -15,7 +15,6 @@ export function Kosakata({ no, name, desc }) {
             borderRadius: 20,
           }}
         >
-          {no}
         </Text>
         <View>
           <View style={{ flexDirection: "row" }}>
@@ -42,6 +41,7 @@ export function Kosakata({ no, name, desc }) {
               fontSize: 14,
               marginLeft: "2%",
               textAlign: "justify",
+              maxWidth: '90%'
             }}
           >
             {desc}
