@@ -1,143 +1,148 @@
 import React, { useState } from "react";
-import { StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { Text, View, TextInput } from "react-native";
-import { Kosakata } from "@/components/Kosakata";
+import { StyleSheet, ScrollView, TouchableOpacity, View, Text, TextInput } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import { data } from "@/constants/Kosakata";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   const [search, onSearch] = useState("");
-  const [selected, setSelected] = useState(null);
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUWYZ";
 
-  // Transform the data object into an array and sort it alphabetically by keys
-  const sortedData = Object.keys(data)
-    .sort()
-    .map((key, index) => ({
-      no: index + 1,
-      name: key,
-      desc: data[key],
-    }));
+  // Extract major names from the data
+  const majors = Object.keys(data).map((key, index) => ({
+    id: index + 1,
+    name: key,
+    description: `Learn about ${key}`,
+    vocab: data[key],
+  }));
 
-  // Filter data based on search query and selected letter
-  const filteredData = sortedData.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchesSelected = selected ? item.name.charAt(0).toUpperCase() === selected : true;
-    return matchesSearch && matchesSelected;
-  });
-
-  // Group data by the first letter
-  const groupedData = filteredData.reduce((acc, item) => {
-    const firstLetter = item.name.charAt(0).toUpperCase();
-    if (!acc[firstLetter]) {
-      acc[firstLetter] = [];
-    }
-    acc[firstLetter].push(item);
-    return acc;
-  }, {});
+  // Filter majors based on search query
+  const filteredMajors = majors.filter((major) =>
+    major.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#BBE9FF" }}>
-      <View style={{ flex: 1 }}>
-        <View style={{ marginTop: "10%", width: "90%", alignSelf: "center" }}>
-          <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-            Selamat Datang Di
-          </Text>
-          <Text style={{ fontSize: 30, fontWeight: "bold", color: "#FFFED3" }}>
-            Kamus Informatika
-          </Text>
-          <Text style={{ fontSize: 15, textAlign: "justify" }}>
-            Silahkan Cari Kosakata Yang Ingin Anda Pelajari Dibawah Ini!
-          </Text>
-        </View>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.heading}>
+          PROGRAM KAMPUS MERDEKA : PMS UNG 2024 DI SMKN 3 GORONTALO
+        </Text>
+        <Text style={styles.subHeading}>Selamat Datang Di</Text>
+        <Text style={styles.title}>Kamus Keteknikan</Text>
+        <Text style={styles.description}>
+          Silahkan Cari Jurusan Dibawah Ini!
+        </Text>
       </View>
-      <View
-        style={{
-          flex: 3,
-          backgroundColor: "white",
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
-          width: "100%",
-          alignSelf: "center",
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            width: "90%",
-            alignSelf: "center",
-            marginTop: "10%",
-          }}
-        >
-          <View>
-            <TextInput
-              style={{
-                borderWidth: 1,
-                height: 50,
-                padding: 10,
-                borderRadius: 20,
-                borderColor: "#BBE9FF",
+      <View style={styles.mainContent}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Cari Jurusan"
+          onChangeText={onSearch}
+          value={search}
+        />
+        <ScrollView style={styles.scrollView}>
+          {filteredMajors.map((major) => (
+            <TouchableOpacity
+              key={major.id}
+              style={styles.majorCard}
+              onPress={() => {
+                router.setParams({ 'major': major.name });
+                router.push('/DetailView');
               }}
-              placeholder="Cari Kosakata"
-              onChangeText={onSearch}
-              value={search}
-            />
-          </View>
-          <View
-            style={{
-              marginTop: "5%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <TouchableOpacity onPress={() => setSelected(null)}>
-              <Text style={{ fontSize: 18, color: selected === null ? 'blue' : 'black' }}>All</Text>
-            </TouchableOpacity>
-            {alphabet.split("").map((item) => (
-              <TouchableOpacity key={item} onPress={() => setSelected(item)}>
-                <Text style={{ fontSize: 18, color: selected === item ? 'blue' : 'black' }}>{item}</Text>
-              </TouchableOpacity>
-            ))}
-          
-          </View>
-
-          <ScrollView style={{ marginTop: "5%", marginBottom: "5%" }}>
-            {Object.keys(groupedData).map((letter) => (
-              <View key={letter}>
-                <Text style={{ fontWeight: "bold", fontSize: 24, marginTop: 10 }}>
-                  {letter}
-                </Text>
-                {groupedData[letter].map((item) => (
-                  <Kosakata
-                    key={item.no}
-                    no={item.no}
-                    name={item.name}
-                    desc={item.desc}
-                  />
-                ))}
+            >
+              <View style={styles.textContainer}>
+                <Text style={styles.majorName}>{major.name}</Text>
+                <Text style={styles.majorDescription}>{major.description}</Text>
               </View>
-            ))}
-          </ScrollView>
-        </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
     </View>
   );
 }
 
+// Styling
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#BBE9FF",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  header: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  heading: {
+    marginTop: '10%',
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  subHeading: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 5,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#FFFED3",
+    textAlign: "center",
+  },
+  description: {
+    fontSize: 15,
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  mainContent: {
+    marginTop:'10%',
+    flex: 3,
+    backgroundColor: "white",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    width: "100%",
+    alignSelf: "center",
+    paddingTop: 20,
+    paddingHorizontal: 15,
+  },
+  searchInput: {
+    borderWidth: 1,
+    height: 50,
+    padding: 10,
+    borderRadius: 20,
+    borderColor: "#BBE9FF",
+    marginBottom: 10,
+  },
+  scrollView: {
+    marginBottom: "5%",
+  },
+  majorCard: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    padding: 20,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  textContainer: {
+    alignItems: 'flex-start',
+  },
+  majorName: {
+    fontSize: 20,
+    marginBottom: 5,
+    fontWeight: 'bold',
+  },
+  majorDescription: {
+    fontSize: 16,
+    color: '#777',
   },
 });

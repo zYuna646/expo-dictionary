@@ -23,6 +23,24 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="pembimbing"
+        options={{
+          title: 'Pembimbing',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
+       <Tabs.Screen
+        name="pengembang"
+        options={{
+          title: 'Pengembang',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'code' : 'code-outline'} color={color} />
+          ),
+        }}
+      />
       
     </Tabs>
   );
