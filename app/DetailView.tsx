@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Kosakata } from '@/components/Kosakata';
 import { data } from '@/constants/Kosakata';
+import { useLocalSearchParams } from 'expo-router';
 
 const DetailView = () => {
-  const vocab = data.infomartika;
+  const params = useLocalSearchParams();
+  console.log(params.key);
+  
+  const vocab = data[params.key];
   const [search, setSearch] = useState("");
   const [selectedLetter, setSelectedLetter] = useState(null);
 

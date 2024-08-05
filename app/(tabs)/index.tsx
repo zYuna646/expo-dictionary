@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { StyleSheet, ScrollView, TouchableOpacity, View, Text, TextInput } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import {
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  View,
+  Text,
+  TextInput,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { data } from "@/constants/Kosakata";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -42,19 +49,29 @@ export default function HomeScreen() {
         />
         <ScrollView style={styles.scrollView}>
           {filteredMajors.map((major) => (
-            <TouchableOpacity
+            // <TouchableOpacity
+            //   key={major.id}
+            //   style={styles.majorCard}
+            //   onPress={() => {
+            //     router.setParams({ 'major': major.name });
+            //     router.push('/DetailView');
+            //   }}
+            // >
+            //   <View style={styles.textContainer}>
+            //     <Text style={styles.majorName}>{major.name}</Text>
+            //     <Text style={styles.majorDescription}>{major.description}</Text>
+            //   </View>
+            // </TouchableOpacity>
+            <Link
               key={major.id}
               style={styles.majorCard}
-              onPress={() => {
-                router.setParams({ 'major': major.name });
-                router.push('/DetailView');
-              }}
+              href={{ pathname: "DetailView", params: { key: major.name } }}
             >
               <View style={styles.textContainer}>
                 <Text style={styles.majorName}>{major.name}</Text>
                 <Text style={styles.majorDescription}>{major.description}</Text>
               </View>
-            </TouchableOpacity>
+            </Link>
           ))}
         </ScrollView>
       </View>
@@ -70,12 +87,12 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   heading: {
-    marginTop: '10%',
+    marginTop: "10%",
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
@@ -99,7 +116,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   mainContent: {
-    marginTop:'10%',
+    marginTop: "10%",
     flex: 3,
     backgroundColor: "white",
     borderTopLeftRadius: 25,
@@ -121,28 +138,28 @@ const styles = StyleSheet.create({
     marginBottom: "5%",
   },
   majorCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 2,
   },
   textContainer: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   majorName: {
     fontSize: 20,
     marginBottom: 5,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   majorDescription: {
     fontSize: 16,
-    color: '#777',
+    color: "#777",
   },
 });
